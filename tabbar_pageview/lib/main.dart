@@ -29,9 +29,8 @@ class AmbientCategory {
 
 class HomeState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  PageController _pageController = PageController(initialPage: 0);
   List<AmbientCategory> _tabList;
-  var _isPageCanChange = true;
+  PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -61,15 +60,11 @@ class HomeState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   }
 
   onPageChanged(int index) async {
-    if (!_isPageCanChange) return;
-
-    _isPageCanChange = false;
     await _pageController.animateToPage(
       index,
       duration: Duration(milliseconds: 500),
       curve: Curves.ease,
     );
-    _isPageCanChange = true;
   }
 
   @override
