@@ -5,7 +5,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,116 +22,94 @@ class MyHomePage extends StatefulWidget {
   State<StatefulWidget> createState() => HomeState();
 }
 
-class TabTitle {
-  String title;
-  int id;
-
-  TabTitle(this.title, this.id);
+class AmbientCategory {
+  String name;
+  AmbientCategory(this.name);
 }
 
 class HomeState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  TabController mTabController;
-  PageController mPageController = PageController(initialPage: 0);
-  List<TabTitle> tabList;
-  var currentPage = 0;
-  var isPageCanChanged = true;
+  TabController _tabController;
+  PageController _pageController = PageController(initialPage: 0);
+  List<AmbientCategory> _tabList;
+  var _isPageCanChange = true;
 
   @override
   void initState() {
     super.initState();
     initTabData();
-    mTabController = TabController(
-      length: tabList.length,
+    _tabController = TabController(
+      length: _tabList.length,
       vsync: this,
     );
 
-    mTabController.addListener(() {
-      //TabBar listener
-      if (mTabController.indexIsChanging) {
-        print(mTabController.index);
-        onPageChange(mTabController.index, p: mPageController);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        print(_tabController.index);
+        onPageChanged(_tabController.index);
       }
     });
   }
 
   initTabData() {
-    tabList = [
-      TabTitle('recommended', 10),
-      TabTitle('hotspot', 0),
-      TabTitle('Society', 1),
-      TabTitle('Entertainment', 2),
-      TabTitle('Sports', 3),
-      TabTitle(' ', 4),
-      TabTitle('Technology', 5),
-      TabTitle(' ', 6),
-      TabTitle('Fashion', 7)
+    _tabList = [
+      AmbientCategory('InFrame'),
+      AmbientCategory('Decor'),
+      AmbientCategory('Art'),
+      AmbientCategory('My Colleciton'),
+      AmbientCategory('Background Theme')
     ];
   }
 
-  onPageChange(int index, {PageController p, TabController t}) async {
-    if (p != null) {
-      //determine which switch is
-      isPageCanChanged = false;
-      await mPageController.animateToPage(index,
-          duration: Duration(milliseconds: 500),
-          curve: Curves
-              .ease); //Wait for pageview to switch, then release pageivew listener
-      isPageCanChanged = true;
-    } else {
-      mTabController.animateTo(index); //Switch Tabbar
-    }
+  onPageChanged(int index) async {
+    if (!_isPageCanChange) return;
+
+    _isPageCanChange = false;
+    await _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
+    _isPageCanChange = true;
   }
 
   @override
   void dispose() {
     super.dispose();
-    mTabController.dispose();
+    _tabController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
-        backgroundColor: Color(0xffd43d3d),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.all_inclusive),
-        backgroundColor: Color(0xffd43d3d),
-        elevation: 2.0,
-        highlightElevation: 2.0,
-        onPressed: () {},
+        title: Text("Wall Ambient"),
+        backgroundColor: Colors.black,
       ),
       body: Column(
         children: <Widget>[
           Container(
-            color: Color(0xfff4f5f6),
-            height: 38.0,
+            color: Colors.black,
+            height: 50,
             child: TabBar(
               isScrollable: true,
-              controller: mTabController,
-              labelColor: Colors.red,
-              unselectedLabelColor: Color(0xff666666),
+              controller: _tabController,
+              indicatorColor: Colors.white,
+              unselectedLabelColor: Colors.white38,
               labelStyle: TextStyle(fontSize: 16.0),
-              tabs: tabList.map((item) {
-                return Tab(
-                  text: item.title,
-                );
-              }).toList(),
+              tabs: _tabList.map((item) => Tab(text: item.name)).toList(),
             ),
           ),
+          Container(
+            color: Colors.black,
+            height: 10,
+          ),
           Expanded(
-            child: PageView.builder(
-              itemCount: tabList.length,
-              onPageChanged: (index) {
-                if (isPageCanChanged) {
-                  onPageChange(index);
-                }
-              },
-              controller: mPageController,
-              itemBuilder: (BuildContext context, int index) {
-                return Text(tabList[index].title);
-              },
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              children: _tabList
+                  .map((item) => Center(child: Text(item.name)))
+                  .toList(),
             ),
           )
         ],
