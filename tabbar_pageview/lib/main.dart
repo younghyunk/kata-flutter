@@ -35,42 +35,9 @@ class HomeState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    initTabData();
-    _tabController = TabController(
-      length: _tabList.length,
-      vsync: this,
-    );
 
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        print(_tabController.index);
-        onPageChanged(_tabController.index);
-      }
-    });
-  }
-
-  initTabData() {
-    _tabList = [
-      AmbientCategory('InFrame'),
-      AmbientCategory('Decor'),
-      AmbientCategory('Art'),
-      AmbientCategory('My Colleciton'),
-      AmbientCategory('Background Theme')
-    ];
-  }
-
-  onPageChanged(int index) async {
-    await _pageController.animateToPage(
-      index,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.ease,
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _tabController.dispose();
+    _initTabData();
+    _initTabController();
   }
 
   @override
@@ -109,6 +76,43 @@ class HomeState extends State<MyHomePage> with SingleTickerProviderStateMixin {
           )
         ],
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
+
+  void _initTabData() {
+    _tabList = [
+      AmbientCategory('InFrame'),
+      AmbientCategory('Decor'),
+      AmbientCategory('Art'),
+      AmbientCategory('My Colleciton'),
+      AmbientCategory('Background Theme')
+    ];
+  }
+
+  void _initTabController() {
+    _tabController = TabController(
+      length: _tabList.length,
+      vsync: this,
+    );
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        _onPageChanged(_tabController.index);
+      }
+    });
+  }
+
+  void _onPageChanged(int index) async {
+    await _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.ease,
     );
   }
 }
